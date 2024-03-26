@@ -22,7 +22,6 @@ jobs:
 
     - name: Publish documentation
       run: |
-        make docs
         docker build -t cr.kruhlmann.dev/docs:latest .
         docker push cr.kruhlmann.dev/docs:latest
       if: github.ref == 'refs/heads/master'
