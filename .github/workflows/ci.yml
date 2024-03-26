@@ -1,0 +1,30 @@
+name: Build and deploy
+
+on: [push, pull_request]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        lfs: true
+
+    - name: Docker login
+      uses: azure/docker-login@v1
+      with:
+        login-server: cr.kruhlmann.dev
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+      if: github.ref == 'refs/heads/master'
+
+    - name: Publish documentation
+      run: |
+        make docs
+        docker build -t cr.kruhlmann.dev/docs:latest .
+        docker push cr.kruhlmann.dev/docs:latest
+      if: github.ref == 'refs/heads/master'
+
+
